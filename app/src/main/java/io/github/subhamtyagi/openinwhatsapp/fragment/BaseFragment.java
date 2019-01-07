@@ -371,6 +371,8 @@ public abstract class BaseFragment extends Fragment {
 
     protected SparseArray<ArrayList<Country>> mCountriesMap = new SparseArray<ArrayList<Country>>();
 
+    protected boolean isShare = false;
+
     protected PhoneNumberUtil mPhoneNumberUtil = PhoneNumberUtil.getInstance();
     protected Spinner mSpinner;
 
@@ -390,8 +392,12 @@ public abstract class BaseFragment extends Fragment {
             if (mLastEnteredPhone != null && mLastEnteredPhone.startsWith(c.getCountryCodeStr())) {
                 return;
             }
-            mPhoneEdit.getText().clear();
-            mPhoneEdit.getText().insert(mPhoneEdit.getText().length() > 0 ? 1 : 0, String.valueOf(c.getCountryCode()));
+            if (!isShare) {
+                mPhoneEdit.getText().clear();
+                mPhoneEdit.getText().insert(mPhoneEdit.getText().length() > 0 ? 1 : 0, String.valueOf(c.getCountryCode()));
+            } else {
+                isShare = false;
+            }
             mPhoneEdit.setSelection(mPhoneEdit.length());
             mLastEnteredPhone = null;
         }
