@@ -2,9 +2,11 @@
 
 package io.github.subhamtyagi.openinwhatsapp.fragment;
 
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,6 +78,8 @@ public class MainFragment extends BaseFragment {
             startActivity(Intent.parseUri("whatsapp://send/?" + getNumber(false), 0));
         } catch (URISyntaxException a) {
             a.printStackTrace();
+        } catch (ActivityNotFoundException e) {
+            Snackbar.make(this.getView(), R.string.label_error_whatsapp_not_installed, Snackbar.LENGTH_LONG).show();
         }
     }
 

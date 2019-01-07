@@ -6,5 +6,6 @@
     <string name="label_send">Open</string>
     <string name="label_error_incorrect_phone">Incorrect phone</string>
     <string name="label_share">Share</string>
+    <string name="label_error_whatsapp_not_installed">You have to install WhatsApp to open the chat directly.</string>
 
 </resources>
