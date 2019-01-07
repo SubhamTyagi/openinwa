@@ -598,6 +598,7 @@ public abstract class BaseFragment extends Fragment {
     protected String validate() {
         String region = null;
         String phone = null;
+        mLastEnteredPhone = mPhoneEdit.getText().toString();
         if (mLastEnteredPhone != null) {
             try {
                 Phonenumber.PhoneNumber p = mPhoneNumberUtil.parse(mLastEnteredPhone, null);
