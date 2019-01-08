@@ -2,14 +2,25 @@
 
 package io.github.subhamtyagi.openinwhatsapp.fragment;
 
+
+import android.app.Activity;
+
 import android.content.ActivityNotFoundException;
+
 import android.content.ComponentName;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+
+import android.provider.ContactsContract;
+
 import android.support.design.widget.Snackbar;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import java.net.URISyntaxException;
 
@@ -17,7 +28,10 @@ import io.github.subhamtyagi.openinwhatsapp.R;
 
 public class MainFragment extends BaseFragment {
 
+    private static int PICK_CONTACT = 1;
+
     private String number;
+    protected Button pickBtn;
 
     public MainFragment() {
     }
@@ -27,6 +41,13 @@ public class MainFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment, container, false);
         initUI(rootView);
+        pickBtn=rootView.findViewById(R.id.btn_pick);
+        pickBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pick();
+            }
+        });
         return rootView;
     }
 
@@ -48,6 +69,11 @@ public class MainFragment extends BaseFragment {
     protected void share() {
         if (setNumber())
             shareLink(getShareMSG());
+    }
+
+    protected void pick() {
+        startActivityForResult(new Intent(Intent.ACTION_PICK)
+                .setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE), PICK_CONTACT);
     }
 
     private boolean setNumber() {
@@ -92,5 +118,27 @@ public class MainFragment extends BaseFragment {
         intent.putExtra("android.intent.extra.TEXT", url);
         intent.setType("text/plain");
         startActivity(Intent.createChooser(intent, "Send to "));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_CONTACT) {
+            if (resultCode == Activity.RESULT_OK) {
+                Uri contactUri = data.getData();
+                String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
+                Cursor cursor = getContext().getContentResolver().query(contactUri, projection,
+                        null, null, null);
+
+                // If the cursor returned is valid, get the phone number
+                if (cursor != null && cursor.moveToFirst()) {
+                    int numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                    String number = cursor.getString(numberIndex);
+                    mPhoneEdit.setText(number);
+                }
+
+                cursor.close();
+            }
+        }
     }
 }
