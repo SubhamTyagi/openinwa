@@ -15,6 +15,7 @@
  */
 package io.github.subhamtyagi.openinwhatsapp.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.telephony.TelephonyManager;
@@ -34,6 +35,7 @@ public class PhoneUtils {
         }
         String code = null;
         if (service != null) {
+            @SuppressLint("MissingPermission")
             String str = service.getLine1Number();
             if (!TextUtils.isEmpty(str) && !str.matches("^0*$")) {
                 code = parseNumber(str);

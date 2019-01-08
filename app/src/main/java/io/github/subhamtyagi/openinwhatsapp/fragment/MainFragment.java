@@ -1,23 +1,18 @@
-
-
 package io.github.subhamtyagi.openinwhatsapp.fragment;
 
 
 import android.app.Activity;
-
 import android.content.ActivityNotFoundException;
-
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-
 import android.provider.ContactsContract;
-
 import android.support.design.widget.Snackbar;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,9 +26,9 @@ import io.github.subhamtyagi.openinwhatsapp.R;
 public class MainFragment extends BaseFragment {
 
     private static int PICK_CONTACT = 1;
-
-    private String number;
     protected Button pickBtn;
+    private String number;
+    //private Context baseActivityContext;
 
     public MainFragment() {
     }
@@ -43,22 +38,25 @@ public class MainFragment extends BaseFragment {
         Intent intent = getActivity().getIntent();
         String action = intent.getAction();
 
+        Log.d("mains", "onStart: action==" + action);
         if (Intent.ACTION_SEND.equals(action)) {
             String type = intent.getType();
             if ("text/x-vcard".equals(type)) {
                 isShare = true;
-
                 Uri contactUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                ContentResolver cr;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                    cr = this.getContext().getContentResolver();
+                else cr = getActivity().getContentResolver();
 
-                ContentResolver cr = getContext().getContentResolver();
                 String data = "";
                 try {
                     InputStream stream = cr.openInputStream(contactUri);
 
                     StringBuffer fileContent = new StringBuffer("");
                     int ch;
-                    while( (ch = stream.read()) != -1)
-                        fileContent.append((char)ch);
+                    while ((ch = stream.read()) != -1)
+                        fileContent.append((char) ch);
                     stream.close();
 
                     data = new String(fileContent);
@@ -78,6 +76,11 @@ public class MainFragment extends BaseFragment {
                     }
                 }
             }
+        } else if (Intent.ACTION_DIAL.equals(action)) {
+            number = intent.getData().toString().substring(4);
+            Log.d("mains", "onStart yui: number==" + number);
+            mPhoneEdit.setText(number);
+            mOnPhoneChangedListener.onPhoneChanged(number);
         }
 
         super.onStart();
@@ -87,8 +90,9 @@ public class MainFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment, container, false);
+        // baseActivityContext = container.getContext();
         initUI(rootView);
-        pickBtn=rootView.findViewById(R.id.btn_pick);
+        pickBtn = rootView.findViewById(R.id.btn_pick);
         pickBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -174,8 +178,14 @@ public class MainFragment extends BaseFragment {
             if (resultCode == Activity.RESULT_OK) {
                 Uri contactUri = data.getData();
                 String[] projection = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
-                Cursor cursor = getContext().getContentResolver().query(contactUri, projection,
-                        null, null, null);
+                Cursor cursor = null;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    cursor = getContext().getContentResolver().query(contactUri, projection,
+                            null, null, null);
+                } else {
+                    cursor = getActivity().getContentResolver().query(contactUri, projection,
+                            null, null, null);
+                }
 
                 // If the cursor returned is valid, get the phone number
                 if (cursor != null && cursor.moveToFirst()) {
@@ -184,7 +194,9 @@ public class MainFragment extends BaseFragment {
                     mPhoneEdit.setText(number);
                 }
 
-                cursor.close();
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
         }
     }
