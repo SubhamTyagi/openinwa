@@ -2,33 +2,51 @@ package io.github.subhamtyagi.openinwhatsapp.fragment;
 
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.design.widget.Snackbar;
+
+import com.github.ialokim.phonefield.PhoneInputLayout;
+import com.google.android.material.snackbar.Snackbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 
 import io.github.subhamtyagi.openinwhatsapp.R;
 
-public class MainFragment extends BaseFragment {
+public class MainFragment extends Fragment {
 
     private static int PICK_CONTACT = 1;
     protected Button pickBtn;
     private String number;
-    //private Context baseActivityContext;
+    protected boolean isShare = false;
+
+    protected PhoneInputLayout mPhoneInput;
+
+    protected EditText shareMsg;
+    protected Button shareBtn;
+
+    protected TextView mBtnLink;
 
     public MainFragment() {
     }
@@ -71,16 +89,14 @@ public class MainFragment extends BaseFragment {
                     //todo: support other phone numbers from vcard
                     if (line.startsWith("TEL;CELL:")) {
                         number = line.substring(9);
-                        mPhoneEdit.setText(number);
-                        mOnPhoneChangedListener.onPhoneChanged(number);
+                        mPhoneInput.setPhoneNumber(number);
                     }
                 }
             }
         } else if (Intent.ACTION_DIAL.equals(action)) {
             number = intent.getData().toString().substring(4);
             Log.d("mains", "onStart yui: number==" + number);
-            mPhoneEdit.setText(number);
-            mOnPhoneChangedListener.onPhoneChanged(number);
+            mPhoneInput.setPhoneNumber(number);
         }
 
         super.onStart();
@@ -105,18 +121,66 @@ public class MainFragment extends BaseFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initCodes(getActivity());
+    }
+
+    protected void initUI(View rootView) {
+        mPhoneInput = (PhoneInputLayout) rootView.findViewById(R.id.phone_input_layout);
+
+        mBtnLink = (TextView) rootView.findViewById(R.id.btn_send);
+        mBtnLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                open();
+            }
+        });
+        shareMsg = (EditText) rootView.findViewById(R.id.msg_text);
+        shareBtn = rootView.findViewById(R.id.btn_share);
+        shareBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                share();
+            }
+        });
+
+        //TODO: could be instead implemented in library
+        mPhoneInput.getEditText().setImeOptions(EditorInfo.IME_ACTION_SEND);
+        mPhoneInput.getEditText().setImeActionLabel(getString(R.string.label_send), EditorInfo.IME_ACTION_SEND);
+        mPhoneInput.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    open();
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    protected String validate() {
+        return mPhoneInput.isValid() ? mPhoneInput.getPhoneNumberE164() : null;
+    }
+
+    protected String getShareMSG(){
+        try {
+            return "text="+URLEncoder.encode(shareMsg.getText().toString(),"utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+    protected void hideKeyboard(View v) {
+        InputMethodManager imm = (InputMethodManager) v.getContext().getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
 
 
-    @Override
     protected void open() {
         if (setNumber())
             openInWhatsapp();
     }
 
 
-    @Override
     protected void share() {
         if (setNumber())
             shareLink(getShareMSG());
@@ -128,12 +192,11 @@ public class MainFragment extends BaseFragment {
     }
 
     private boolean setNumber() {
-        hideKeyboard(mPhoneEdit);
-        mPhoneEdit.setError(null);
+        hideKeyboard(mPhoneInput);
+        mPhoneInput.setError(null);
         number = validate();
         if (number == null) {
-            mPhoneEdit.requestFocus();
-            mPhoneEdit.setError(getString(R.string.label_error_incorrect_phone));
+            mPhoneInput.setError(getString(R.string.label_error_incorrect_phone));
             return false;
         }
         return true;
@@ -191,7 +254,7 @@ public class MainFragment extends BaseFragment {
                 if (cursor != null && cursor.moveToFirst()) {
                     int numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
                     String number = cursor.getString(numberIndex);
-                    mPhoneEdit.setText(number);
+                    mPhoneInput.setPhoneNumber(number);
                 }
 
                 if (cursor != null) {
