@@ -1,4 +1,4 @@
-## Open in WhatsApp
+## Open in WhatsApp [![Build Status](https://travis-ci.org/SubhamTyagi/openinwa.svg?branch=master)](https://travis-ci.org/SubhamTyagi/openinwa)
 
  - This app uses WhatsApp public api 'click to chat' feature to open a chat with any number without saving to your phone book.
  - You can create an url link that will open WhatsApp on the specified number. This is a WhatsApp feature, you don't need this app to open the link, only to create it.
