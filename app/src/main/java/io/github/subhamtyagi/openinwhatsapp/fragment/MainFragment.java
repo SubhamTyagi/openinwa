@@ -4,6 +4,8 @@ package io.github.subhamtyagi.openinwhatsapp.fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -13,9 +15,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-
-import com.github.ialokim.phonefield.PhoneInputLayout;
-import com.google.android.material.snackbar.Snackbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -25,7 +24,11 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.github.ialokim.phonefield.PhoneInputLayout;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -38,15 +41,15 @@ public class MainFragment extends Fragment {
 
     private static int PICK_CONTACT = 1;
     protected Button pickBtn;
-    private String number;
     protected boolean isShare = false;
-
     protected PhoneInputLayout mPhoneInput;
-
     protected EditText shareMsg;
     protected Button shareBtn;
-
     protected TextView mBtnLink;
+    private boolean isFromClipBoard;
+    private ImageView paste;
+    private String number;
+
 
     public MainFragment() {
     }
@@ -55,8 +58,6 @@ public class MainFragment extends Fragment {
     public void onStart() {
         Intent intent = getActivity().getIntent();
         String action = intent.getAction();
-
-        Log.d("mains", "onStart: action==" + action);
         if (Intent.ACTION_SEND.equals(action)) {
             String type = intent.getType();
             if ("text/x-vcard".equals(type)) {
@@ -70,17 +71,14 @@ public class MainFragment extends Fragment {
                 String data = "";
                 try {
                     InputStream stream = cr.openInputStream(contactUri);
-
                     StringBuffer fileContent = new StringBuffer("");
                     int ch;
                     while ((ch = stream.read()) != -1)
                         fileContent.append((char) ch);
                     stream.close();
-
                     data = new String(fileContent);
 
                 } catch (Exception e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 
@@ -94,17 +92,16 @@ public class MainFragment extends Fragment {
                 }
             }
         } else if (Intent.ACTION_DIAL.equals(action)) {
-            number = intent.getData().toString().substring(4);
-            Log.d("mains", "onStart yui: number==" + number);
+            number = intent.getData().toString().substring(3);
+            Log.d(MainFragment.class.getName(), "onStart: number==" + number);
             mPhoneInput.setPhoneNumber(number);
         }
-
         super.onStart();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment, container, false);
         // baseActivityContext = container.getContext();
         initUI(rootView);
@@ -124,30 +121,38 @@ public class MainFragment extends Fragment {
     }
 
     protected void initUI(View rootView) {
-        mPhoneInput = (PhoneInputLayout) rootView.findViewById(R.id.phone_input_layout);
+        mPhoneInput = rootView.findViewById(R.id.phone_input_layout);
+        mBtnLink = rootView.findViewById(R.id.btn_send);
+        shareMsg = rootView.findViewById(R.id.msg_text);
+        shareBtn = rootView.findViewById(R.id.btn_share);
+        paste = rootView.findViewById(R.id.btn_paste);
 
-        mBtnLink = (TextView) rootView.findViewById(R.id.btn_send);
         mBtnLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 open();
             }
         });
-        shareMsg = (EditText) rootView.findViewById(R.id.msg_text);
-        shareBtn = rootView.findViewById(R.id.btn_share);
         shareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 share();
             }
         });
+        paste.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setNumberFromClipBoard();
 
+            }
+        });
         //TODO: could be instead implemented in library
         mPhoneInput.getEditText().setImeOptions(EditorInfo.IME_ACTION_SEND);
         mPhoneInput.getEditText().setImeActionLabel(getString(R.string.label_send), EditorInfo.IME_ACTION_SEND);
         mPhoneInput.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                isFromClipBoard = false;
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
                     open();
                     return true;
@@ -155,20 +160,42 @@ public class MainFragment extends Fragment {
                 return false;
             }
         });
+
+    }
+
+    private void setNumberFromClipBoard() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            ClipboardManager clipboardManager = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M ? (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE) : (ClipboardManager) getView().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clipData = clipboardManager.getPrimaryClip();
+            if (clipData.getItemCount() > 0) {
+                ClipData.Item item = clipData.getItemAt(0);
+                String text = item.getText().toString();
+                text.replaceAll("/[^0-9]/", "");
+                mPhoneInput.setPhoneNumber(text);
+                number=text;
+                isFromClipBoard = true;
+                Log.d("MainFragment", "setNumberFromClipBoard: number is " + text + "  ");
+
+            }
+
+        }
+
     }
 
     protected String validate() {
-        return mPhoneInput.isValid() ? mPhoneInput.getPhoneNumberE164() : null;
+        return mPhoneInput.getPhoneNumberE164();
+        //return mPhoneInput.isValid() ? mPhoneInput.getPhoneNumberE164() : null;
     }
 
-    protected String getShareMSG(){
+    protected String getShareMSG() {
         try {
-            return "text="+URLEncoder.encode(shareMsg.getText().toString(),"utf-8");
+            return "text=" + URLEncoder.encode(shareMsg.getText().toString(), "utf-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return "";
         }
     }
+
     protected void hideKeyboard(View v) {
         InputMethodManager imm = (InputMethodManager) v.getContext().getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
@@ -176,13 +203,19 @@ public class MainFragment extends Fragment {
 
 
     protected void open() {
-        if (setNumber())
+        if (isFromClipBoard) {
+            isFromClipBoard = false;
+            openInWhatsapp();
+        } else if (setNumber())
             openInWhatsapp();
     }
 
 
     protected void share() {
-        if (setNumber())
+        if (isFromClipBoard) {
+            isFromClipBoard = false;
+            shareLink(getShareMSG());
+        } else if (setNumber())
             shareLink(getShareMSG());
     }
 
@@ -194,7 +227,8 @@ public class MainFragment extends Fragment {
     private boolean setNumber() {
         hideKeyboard(mPhoneInput);
         mPhoneInput.setError(null);
-        number = validate();
+        if (!isFromClipBoard)
+            number = validate();
         if (number == null) {
             mPhoneInput.setError(getString(R.string.label_error_incorrect_phone));
             return false;
@@ -249,14 +283,12 @@ public class MainFragment extends Fragment {
                     cursor = getActivity().getContentResolver().query(contactUri, projection,
                             null, null, null);
                 }
-
                 // If the cursor returned is valid, get the phone number
                 if (cursor != null && cursor.moveToFirst()) {
                     int numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
                     String number = cursor.getString(numberIndex);
                     mPhoneInput.setPhoneNumber(number);
                 }
-
                 if (cursor != null) {
                     cursor.close();
                 }

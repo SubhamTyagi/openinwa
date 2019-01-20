@@ -1,15 +1,12 @@
 package io.github.subhamtyagi.openinwhatsapp;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.appcompat.app.AppCompatActivity;
 import io.github.subhamtyagi.openinwhatsapp.fragment.MainFragment;
 
 public class MainActivity extends AppCompatActivity {
