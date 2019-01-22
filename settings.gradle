@@ -1,1 +1,1 @@
-include ':app',':phone-field'
+include ':app'

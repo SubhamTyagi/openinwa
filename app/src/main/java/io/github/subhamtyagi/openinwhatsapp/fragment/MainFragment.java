@@ -46,7 +46,7 @@ public class MainFragment extends Fragment {
     protected EditText shareMsg;
     protected Button shareBtn;
     protected TextView mBtnLink;
-    private boolean isFromClipBoard;
+    //private boolean isFromClipBoard;
     private ImageView paste;
     private String number;
 
@@ -149,10 +149,11 @@ public class MainFragment extends Fragment {
         //TODO: could be instead implemented in library
         mPhoneInput.getEditText().setImeOptions(EditorInfo.IME_ACTION_SEND);
         mPhoneInput.getEditText().setImeActionLabel(getString(R.string.label_send), EditorInfo.IME_ACTION_SEND);
+
         mPhoneInput.getEditText().setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                isFromClipBoard = false;
+                //isFromClipBoard = false;
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
                     open();
                     return true;
@@ -170,11 +171,11 @@ public class MainFragment extends Fragment {
             if (clipData.getItemCount() > 0) {
                 ClipData.Item item = clipData.getItemAt(0);
                 String text = item.getText().toString();
-                text.replaceAll("/[^0-9]/", "");
+                //text.replaceAll("/[^0-9]/", "");
                 mPhoneInput.setPhoneNumber(text);
-                number=text;
-                isFromClipBoard = true;
-                Log.d("MainFragment", "setNumberFromClipBoard: number is " + text + "  ");
+                //number=text;
+                //isFromClipBoard = true;
+                //  Log.d("MainFragment", "setNumberFromClipBoard: number is " + text + "  ");
 
             }
 
@@ -182,9 +183,10 @@ public class MainFragment extends Fragment {
 
     }
 
+
     protected String validate() {
-        return mPhoneInput.getPhoneNumberE164();
-        //return mPhoneInput.isValid() ? mPhoneInput.getPhoneNumberE164() : null;
+      //  return mPhoneInput.getPhoneNumberE164();
+        return mPhoneInput.isValid() ? mPhoneInput.getPhoneNumberE164() : null;
     }
 
     protected String getShareMSG() {
@@ -203,19 +205,21 @@ public class MainFragment extends Fragment {
 
 
     protected void open() {
-        if (isFromClipBoard) {
+       /* if (isFromClipBoard) {
             isFromClipBoard = false;
             openInWhatsapp();
-        } else if (setNumber())
+        } else*/
+        if (setNumber())
             openInWhatsapp();
     }
 
 
     protected void share() {
-        if (isFromClipBoard) {
+        /*if (isFromClipBoard) {
             isFromClipBoard = false;
             shareLink(getShareMSG());
-        } else if (setNumber())
+        } else */
+        if (setNumber())
             shareLink(getShareMSG());
     }
 
@@ -227,8 +231,8 @@ public class MainFragment extends Fragment {
     private boolean setNumber() {
         hideKeyboard(mPhoneInput);
         mPhoneInput.setError(null);
-        if (!isFromClipBoard)
-            number = validate();
+        // if (!isFromClipBoard)
+        number = validate();
         if (number == null) {
             mPhoneInput.setError(getString(R.string.label_error_incorrect_phone));
             return false;
