@@ -46,7 +46,7 @@ public class MainFragment extends Fragment {
     protected EditText shareMsg;
     protected Button shareBtn;
     protected TextView mBtnLink;
-    //private boolean isFromClipBoard;
+   // private boolean isFromClipBoard;
     private ImageView paste;
     private String number;
 
@@ -146,7 +146,7 @@ public class MainFragment extends Fragment {
 
             }
         });
-        //TODO: could be instead implemented in library
+
         mPhoneInput.getEditText().setImeOptions(EditorInfo.IME_ACTION_SEND);
         mPhoneInput.getEditText().setImeActionLabel(getString(R.string.label_send), EditorInfo.IME_ACTION_SEND);
 
@@ -171,21 +171,17 @@ public class MainFragment extends Fragment {
             if (clipData.getItemCount() > 0) {
                 ClipData.Item item = clipData.getItemAt(0);
                 String text = item.getText().toString();
-                //text.replaceAll("/[^0-9]/", "");
+                //text='+'+text.replaceAll("/[^0-9]/", "");
                 mPhoneInput.setPhoneNumber(text);
-                //number=text;
-                //isFromClipBoard = true;
-                //  Log.d("MainFragment", "setNumberFromClipBoard: number is " + text + "  ");
-
+               // isFromClipBoard = true;
             }
-
         }
 
     }
 
 
     protected String validate() {
-      //  return mPhoneInput.getPhoneNumberE164();
+        // return mPhoneInput.getPhoneNumberE164();
         return mPhoneInput.isValid() ? mPhoneInput.getPhoneNumberE164() : null;
     }
 
@@ -205,20 +201,12 @@ public class MainFragment extends Fragment {
 
 
     protected void open() {
-       /* if (isFromClipBoard) {
-            isFromClipBoard = false;
-            openInWhatsapp();
-        } else*/
         if (setNumber())
             openInWhatsapp();
     }
 
 
     protected void share() {
-        /*if (isFromClipBoard) {
-            isFromClipBoard = false;
-            shareLink(getShareMSG());
-        } else */
         if (setNumber())
             shareLink(getShareMSG());
     }
@@ -254,8 +242,8 @@ public class MainFragment extends Fragment {
             intent.putExtra("jid", getNumber(true) + "@s.whatsapp.net");
             intent.putExtra("displayname", "+" + getNumber(true));
             startActivity(Intent.parseUri("whatsapp://send/?" + getNumber(false), 0));
-        } catch (URISyntaxException a) {
-            a.printStackTrace();
+        } catch (URISyntaxException ignore) {
+            ignore.printStackTrace();
         } catch (ActivityNotFoundException e) {
             Snackbar.make(this.getView(), R.string.label_error_whatsapp_not_installed, Snackbar.LENGTH_LONG).show();
         }

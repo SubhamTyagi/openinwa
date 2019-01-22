@@ -9,5 +9,6 @@
     <string name="label_share">Share</string>
     <string name="label_pick">Pick from contacts</string>
     <string name="label_error_whatsapp_not_installed">You have to install WhatsApp to open the chat directly.</string>
+    <string name="optional_text_to_share">Optional Text to share</string>
 
 </resources>

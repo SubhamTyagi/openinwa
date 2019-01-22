@@ -65,7 +65,7 @@
             android:id="@+id/msg_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="PREFILLED MESSAGE FOR SHARE"/>
+            android:hint="@string/optional_text_to_share"/>
 
 
     </LinearLayout>
