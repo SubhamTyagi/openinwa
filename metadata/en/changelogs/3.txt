@@ -1,0 +1,2 @@
+*Paste from clipboard*
+*Bug fixes and stability improvements*
