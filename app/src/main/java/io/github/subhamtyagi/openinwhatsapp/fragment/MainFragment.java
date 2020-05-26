@@ -228,16 +228,16 @@ public class MainFragment extends Fragment {
         return true;
     }
 
-    private String getNumber(boolean raw) {
+    private String getNumber() {
         if (this.number.length() == 0) {
             return "";
         }
-        return (raw ? "" : "phone=") + this.number.replaceAll("^0+", "");
+        return "phone=" + this.number.replaceAll("^0+", "");
     }
 
     private void openInWhatsapp() {
         try {
-            startActivity(Intent.parseUri("whatsapp://send/?" + getNumber(false), 0));
+            startActivity(Intent.parseUri("whatsapp://send/?" + getNumber(), 0));
         } catch (URISyntaxException ignore) {
             ignore.printStackTrace();
         } catch (ActivityNotFoundException e) {
@@ -246,7 +246,7 @@ public class MainFragment extends Fragment {
     }
 
     private void shareLink(String message) {
-        String number = getNumber(false);
+        String number = getNumber();
         StringBuilder append = new StringBuilder().append("http://api.whatsapp.com/send?").append(number);
         String str = (number.length() == 0 || message.length() == 0) ? "" : "&";
         String url = append.append(str).append(message).toString();
