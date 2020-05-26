@@ -1,0 +1,12 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="contacts"
+        android:enabled="true"
+        android:icon="@mipmap/ic_contact"
+        android:shortcutShortLabel="@string/label_contacts_shortcut">
+        <intent
+            android:action="io.github.subhamtyagi.openinwhatsapp.CONTACTS"
+            android:targetPackage="io.github.subhamtyagi.openinwhatsapp"
+            android:targetClass="io.github.subhamtyagi.openinwhatsapp.MainActivity" />
+    </shortcut>
+</shortcuts>

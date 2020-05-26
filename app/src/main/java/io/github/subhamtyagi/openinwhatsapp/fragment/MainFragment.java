@@ -26,7 +26,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.ialokim.phonefield.PhoneInputLayout;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -52,6 +54,15 @@ public class MainFragment extends Fragment {
 
 
     public MainFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getActivity().getIntent().getAction() == "io.github.subhamtyagi.openinwhatsapp.CONTACTS") {
+            pick();
+        }
     }
 
     @Override
