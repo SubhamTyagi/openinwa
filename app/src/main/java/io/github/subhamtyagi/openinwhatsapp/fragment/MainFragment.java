@@ -237,10 +237,6 @@ public class MainFragment extends Fragment {
 
     private void openInWhatsapp() {
         try {
-            Intent intent = new Intent("android.intent.action.MAIN");
-            intent.setComponent(new ComponentName("com.whatsapp", "com.whatsapp.Conversation"));
-            intent.putExtra("jid", getNumber(true) + "@s.whatsapp.net");
-            intent.putExtra("displayname", "+" + getNumber(true));
             startActivity(Intent.parseUri("whatsapp://send/?" + getNumber(false), 0));
         } catch (URISyntaxException ignore) {
             ignore.printStackTrace();
