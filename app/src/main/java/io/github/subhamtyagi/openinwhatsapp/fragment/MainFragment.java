@@ -2,7 +2,6 @@ package io.github.subhamtyagi.openinwhatsapp.fragment;
 
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -27,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
 import com.github.ialokim.phonefield.PhoneInputLayout;
 import com.google.android.material.snackbar.Snackbar;
 
