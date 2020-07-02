@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -183,12 +184,14 @@ public class MainFragment extends Fragment {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             ClipboardManager clipboardManager = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M ? (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE) : (ClipboardManager) getView().getContext().getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clipData = clipboardManager.getPrimaryClip();
-            if (clipData.getItemCount() > 0) {
+            if (clipData != null && clipData.getItemCount() > 0) {
                 ClipData.Item item = clipData.getItemAt(0);
                 String text = item.getText().toString();
                 //text='+'+text.replaceAll("/[^0-9]/", "");
                 mPhoneInput.setPhoneNumber(text);
                // isFromClipBoard = true;
+            } else {
+                Toast.makeText(getContext(), R.string.empty_clipboard, Toast.LENGTH_SHORT).show();
             }
         }
 
