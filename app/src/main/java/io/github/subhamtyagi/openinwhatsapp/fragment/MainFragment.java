@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +30,9 @@ import androidx.fragment.app.Fragment;
 
 import com.github.ialokim.phonefield.PhoneInputLayout;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -38,6 +40,8 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 
 import io.github.subhamtyagi.openinwhatsapp.R;
+import io.github.subhamtyagi.openinwhatsapp.prefs.Prefs;
+import timber.log.Timber;
 
 public class MainFragment extends Fragment {
 
@@ -51,7 +55,6 @@ public class MainFragment extends Fragment {
    // private boolean isFromClipBoard;
     private ImageView paste;
     private String number;
-
 
     public MainFragment() {
     }
@@ -158,6 +161,7 @@ public class MainFragment extends Fragment {
             }
         });
 
+        mPhoneInput.setDefaultCountry(new Prefs(getContext()).getLastRegion());
         mPhoneInput.getEditText().setImeOptions(EditorInfo.IME_ACTION_SEND);
         mPhoneInput.getEditText().setImeActionLabel(getString(R.string.label_send), EditorInfo.IME_ACTION_SEND);
 
@@ -236,7 +240,24 @@ public class MainFragment extends Fragment {
             mPhoneInput.setError(getString(R.string.label_error_incorrect_phone));
             return false;
         }
+
+        storeCountryCode();
+
         return true;
+    }
+
+    private void storeCountryCode() {
+        // Store country code
+        if (mPhoneInput.isValid()) {
+            PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+            try {
+                Phonenumber.PhoneNumber phoneNumber = phoneUtil.parse(mPhoneInput.getPhoneNumberE164(), "");
+                new Prefs(getContext()).setLastRegion(phoneUtil.getRegionCodeForNumber(phoneNumber));
+            } catch (NumberParseException e) {
+                Timber.e(e, "Failed to store country code. NumberParseException thrown while trying to parse " + mPhoneInput.getPhoneNumberE164());
+            }
+        }
+
     }
 
     private String getNumber() {
