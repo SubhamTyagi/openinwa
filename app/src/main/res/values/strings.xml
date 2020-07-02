@@ -12,4 +12,6 @@
     <string name="optional_text_to_share">Optional Text to share</string>
     <string name="label_contacts_shortcut">Contacts</string>
 
+    <!-- Preference ID's -->
+    <string name="pref_last_region" translatable="false">pref_last_region</string>
 </resources>
