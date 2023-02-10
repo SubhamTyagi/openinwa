@@ -2,12 +2,12 @@
 
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
         <!-- Customize your theme here. -->
-        <item name="colorPrimaryDark">#757575</item>
+        <item name="colorPrimaryDark">#00574B</item>
         <!-- Original AppCompat attributes. -->
-        <item name="colorPrimary">#9E9E9E</item>
+        <item name="colorPrimary">#008577</item>
         <item name="colorSecondary">#F44336</item>
 
-        <item name="colorOnSurface">#E64A19</item>
+        <item name="colorOnSurface">#008577</item>
         <item name="colorSurface">#E1F5FE</item>
     </style>
 
