@@ -1,25 +1,38 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_gravity="center"
-              android:orientation="vertical"
-              android:paddingLeft="@dimen/activity_horizontal_margin"
-              android:paddingTop="@dimen/activity_vertical_margin"
-              android:paddingRight="@dimen/activity_horizontal_margin"
-              android:paddingBottom="@dimen/activity_vertical_margin">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="24sp" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/btn_pick"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="6dp"
-        android:background="@color/colorAccent"
+
+
         android:gravity="center"
-        android:paddingRight="6dp"
         android:text="@string/label_pick"
-        android:textColor="@android:color/background_light"
-        android:textSize="20sp"/>
+
+        android:textSize="20sp" />
 
 
     <LinearLayout
@@ -49,7 +62,7 @@
             android:layout_height="90dp"
             android:layout_weight="2"
             android:clickable="true"
-            app:srcCompat="?android:attr/actionModePasteDrawable"/>
+            app:srcCompat="?android:attr/actionModePasteDrawable" />
 
     </LinearLayout>
 
@@ -65,7 +78,7 @@
             android:id="@+id/msg_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/optional_text_to_share"/>
+            android:hint="@string/optional_text_to_share" />
 
 
     </LinearLayout>
@@ -82,27 +95,24 @@
             android:id="@+id/btn_send"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="6dp"
+
             android:layout_weight="1"
-            android:background="@color/colorAccent"
             android:gravity="center"
-            android:paddingRight="6dp"
+
             android:text="@string/label_send"
-            android:textColor="@android:color/background_light"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/btn_share"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="6dp"
             android:layout_weight="1"
-            android:background="@color/colorAccent"
+
             android:gravity="center"
-            android:paddingLeft="6dp"
+
             android:text="@string/label_share"
-            android:textColor="@android:color/background_light"
-            android:textSize="20sp"/>
+
+            android:textSize="20sp" />
 
     </LinearLayout>
 
