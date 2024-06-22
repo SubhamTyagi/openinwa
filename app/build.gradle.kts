@@ -56,7 +56,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
    // implementation(libs.androidx.material3)
-    implementation ("com.google.android.material:material:1.12.0")
+    implementation (libs.material)
     implementation(libs.appcompat)
     implementation(libs.preference)
     implementation(libs.libphonenumber)
