@@ -242,6 +242,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun openInTelegram() {
+        try {
+            startActivity(Intent.parseUri("https://t.me/$number", 0))
+        } catch (e: URISyntaxException) {
+            e.printStackTrace()
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, "You have to install Telegram to open the chat", Toast.LENGTH_LONG)
+                .show()
+        }
+    }
+
+    private fun openInSignal() {
+        try {
+            startActivity(Intent.parseUri("https://signal.me/#p/$number", 0))
+        } catch (e: URISyntaxException) {
+            e.printStackTrace()
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, "You have to install Signal to open the chat", Toast.LENGTH_LONG)
+                .show()
+        }
+    }
+
     private fun shareLink(message: String) {
         val number = getNumber()
         val url =
