@@ -28,7 +28,7 @@ import java.io.UnsupportedEncodingException
 import java.net.URISyntaxException
 import java.net.URLEncoder
 
-class MainActivity: AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val PICK_CONTACT = 1
@@ -41,7 +41,10 @@ class MainActivity: AppCompatActivity() {
     private lateinit var shareBtn: Button
     private lateinit var mBtnLink: TextView
     private lateinit var paste: ImageView
-    private var number: String? = null
+    private var number: String = ""
+        set(value){
+            field=value.replace(Regex("[^+\\d]"),"")
+        }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
@@ -55,6 +58,7 @@ class MainActivity: AppCompatActivity() {
         initUI()
     }
 
+
     override fun onStart() {
         super.onStart()
         val action = intent?.action
@@ -62,10 +66,10 @@ class MainActivity: AppCompatActivity() {
             handleActionSend(intent)
         } else if (Intent.ACTION_DIAL == action) {
             handleActionDial(intent)
-        } else if(action == Intent.ACTION_VIEW){
-            val data=intent.data
-            if (data?.scheme=="tel"){
-                val phoneNumber=data.schemeSpecificPart
+        } else if (action == Intent.ACTION_VIEW) {
+            val data = intent.data
+            if (data?.scheme == "tel") {
+                number = data.schemeSpecificPart
                 mPhoneInput.setPhoneNumber(number)
             }
         }
@@ -123,7 +127,10 @@ class MainActivity: AppCompatActivity() {
         // Set default country and IME options
         mPhoneInput.setDefaultCountry(Prefs(this).lastRegion)
         mPhoneInput.editText.imeOptions = EditorInfo.IME_ACTION_SEND
-        mPhoneInput.editText.setImeActionLabel(getString(R.string.label_send), EditorInfo.IME_ACTION_SEND)
+        mPhoneInput.editText.setImeActionLabel(
+            getString(R.string.label_send),
+            EditorInfo.IME_ACTION_SEND
+        )
         mPhoneInput.editText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEND) {
                 open()
@@ -138,15 +145,15 @@ class MainActivity: AppCompatActivity() {
         val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clipData = clipboardManager.primaryClip
         if (clipData != null && clipData.itemCount > 0) {
-            val text = clipData.getItemAt(0).text.toString()
-            mPhoneInput.setPhoneNumber(text)
+            number = clipData.getItemAt(0).text.toString()
+            mPhoneInput.setPhoneNumber(number)
         } else {
             Toast.makeText(this, R.string.empty_clipboard, Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun validate(): String? {
-        return if (mPhoneInput.isValid) mPhoneInput.phoneNumberE164 else null
+    private fun validate(): String {
+        return if (mPhoneInput.isValid) mPhoneInput.phoneNumberE164 else ""
     }
 
     private fun getShareMSG(): String {
@@ -172,14 +179,17 @@ class MainActivity: AppCompatActivity() {
     }
 
     private fun pick() {
-        startActivityForResult(Intent(Intent.ACTION_PICK).setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE), PICK_CONTACT)
+        startActivityForResult(
+            Intent(Intent.ACTION_PICK).setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE),
+            PICK_CONTACT
+        )
     }
 
     private fun setNumber(): Boolean {
         hideKeyboard(mPhoneInput)
         mPhoneInput.setError(null)
         number = validate()
-        return if (number == null) {
+        return if (number == "") {
             mPhoneInput.setError(getString(R.string.label_error_incorrect_phone))
             false
         } else {
@@ -214,13 +224,15 @@ class MainActivity: AppCompatActivity() {
         } catch (e: URISyntaxException) {
             e.printStackTrace()
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(this,R.string.label_error_whatsapp_not_installed,Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.label_error_whatsapp_not_installed, Toast.LENGTH_LONG)
+                .show()
         }
     }
 
     private fun shareLink(message: String) {
         val number = getNumber()
-        val url = "https://api.whatsapp.com/send?$number${if (number.isNotEmpty() && message.isNotEmpty()) "&" else ""}$message"
+        val url =
+            "https://api.whatsapp.com/send?$number${if (number.isNotEmpty() && message.isNotEmpty()) "&" else ""}$message"
         val intent = Intent(Intent.ACTION_SEND).apply {
             putExtra(Intent.EXTRA_TEXT, url)
             type = "text/plain"
@@ -236,7 +248,8 @@ class MainActivity: AppCompatActivity() {
             val cursor: Cursor? = contentResolver.query(contactUri!!, projection, null, null, null)
             cursor?.use {
                 if (it.moveToFirst()) {
-                    val numberIndex = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                    val numberIndex =
+                        it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
                     val number = it.getString(numberIndex)
                     mPhoneInput.setPhoneNumber(number)
                 }
