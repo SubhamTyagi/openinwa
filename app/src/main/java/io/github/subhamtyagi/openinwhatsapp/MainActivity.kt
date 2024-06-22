@@ -11,6 +11,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -75,6 +77,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu,menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.action_about -> startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/subhamtyagi/openinwa")))
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
     private fun handleActionSend(intent: Intent) {
         val type = intent.type
