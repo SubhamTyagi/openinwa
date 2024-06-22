@@ -1,0 +1,6 @@
+- Dynamic colors
+- tel: link support
+- number format improvement
+- icon fix
+- dev: new code base
+- bug fix and other improvement
