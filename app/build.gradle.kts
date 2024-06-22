@@ -9,10 +9,10 @@ android {
 
     defaultConfig {
         applicationId = "io.github.subhamtyagi.openinwhatsapp"
-        minSdk = 24
+        minSdk = 21
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 7
+        versionName = "1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
