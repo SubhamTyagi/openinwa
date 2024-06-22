@@ -42,9 +42,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mBtnLink: TextView
     private lateinit var paste: ImageView
     private var number: String = ""
-        set(value){
-            field=value.replace(Regex("[^+\\d]"),"")
+        set(value) {
+            field = value.replace(Regex("[^+\\d]"), "")
         }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
@@ -211,10 +212,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getNumber(): String {
-        return if (number.isNullOrEmpty()) {
+        return if (number.isEmpty()) {
             ""
         } else {
-            "phone=" + number!!.replace("^0+".toRegex(), "")
+            "phone=" + number.replace("^0+".toRegex(), "")
         }
     }
 
