@@ -21,6 +21,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.ialokim.phonefield.PhoneInputLayout
+import com.google.android.material.color.DynamicColors
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import io.github.subhamtyagi.openinwhatsapp.prefs.Prefs
@@ -48,17 +49,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DynamicColors.applyToActivityIfAvailable(this)
         setContentView(R.layout.main_activity)
 
         // Check if the activity was started with the "CONTACTS" action
-
         if (intent?.action == "io.github.subhamtyagi.openinwhatsapp.CONTACTS") {
             pick()
         }
-
         initUI()
     }
-
 
     override fun onStart() {
         super.onStart()
