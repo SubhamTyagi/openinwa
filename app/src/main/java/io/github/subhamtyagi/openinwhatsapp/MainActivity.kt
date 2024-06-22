@@ -47,12 +47,14 @@ class MainActivity: AppCompatActivity() {
         setContentView(R.layout.main_activity)
 
         // Check if the activity was started with the "CONTACTS" action
+
         if (intent?.action == "io.github.subhamtyagi.openinwhatsapp.CONTACTS") {
             pick()
         }
 
         initUI()
     }
+
     override fun onStart() {
         super.onStart()
         val action = intent?.action
@@ -60,8 +62,15 @@ class MainActivity: AppCompatActivity() {
             handleActionSend(intent)
         } else if (Intent.ACTION_DIAL == action) {
             handleActionDial(intent)
+        } else if(action == Intent.ACTION_VIEW){
+            val data=intent.data
+            if (data?.scheme=="tel"){
+                val phoneNumber=data.schemeSpecificPart
+                mPhoneInput.setPhoneNumber(number)
+            }
         }
     }
+
 
     private fun handleActionSend(intent: Intent) {
         val type = intent.type
